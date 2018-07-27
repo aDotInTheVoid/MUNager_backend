@@ -1,4 +1,4 @@
-"""api/models.py: django models for the UCSMUN MUNager api"""
+"""schema.py: qraphQL schemas for UCSMUN MUNager api"""
 
 # Copyright (C) 2018  Nixon Enraght-Moony
 
@@ -15,25 +15,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from django.db import models
+import graphene
 
-# Create your models here.
-
-
-class CardPage(models.Model):
-    name = models.CharField(max_length=30)
-
-    def __str__(self):
-        return "Cardpage: {}".format(self.name)
+import api.schema
 
 
-class Card(models.Model):
-    title = models.CharField(max_length=30)
-    text = models.TextField(
-        help_text="The main text body to display on the card")
-    media = models.URLField(
-        help_text="The absolute url to the image for the card")
-    page = models.ForeignKey(CardPage, on_delete=models.CASCADE)
+class Query(api.schema.Query, graphene.ObjectType):
+    pass
 
-    def __str__(self):
-        return self.title
+
+schema = graphene.Schema(query=Query)
