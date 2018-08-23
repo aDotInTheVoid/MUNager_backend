@@ -43,7 +43,7 @@ class Card(models.Model):
 
 
 class Committee(models.Model):
-    name = models.CharField(max_length=20, help_text="Eg: Polictical 1, Human Rights")
+    name = models.CharField(max_length=30, help_text="Eg: Polictical 1, Human Rights")
     block = models.CharField(max_length=20, help_text="Eg: North, Science, Main")
     room = models.CharField(max_length=20, help_text="Eg: C1, Lund Theater")
 
@@ -68,18 +68,11 @@ class Delegation(models.Model):
 
 class Delegate(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    delegation = models.ForeignKey(Delegation, on_delete=models.CASCADE)
+    delegation = models.ForeignKey(Delegation, on_delete=models.SET_NULL, null=True)
+    committee = models.ForeignKey(Committee, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return "Delegate ".format(self.user.username)
-
-
-class Clause(models.Model):
-    word = models.CharField(max_length=10)
-    body = models.TextField(max_length=300)
-
-    def __str__(self):
-        return self.word + self.body
+        return str(self.user)
 
 
 class Resolution(models.Model):
@@ -90,5 +83,37 @@ class Resolution(models.Model):
 
     body = JSONField(help_text="The body of the resolution in json form")
 
+    # Status
+
+    NOT_SUBMITED = 0
+    SUMBITTED = 1
+    REJECTED_FOR_COMMITTEE = 2
+    ACCEPTED_FOR_COMMITTED = 3
+    LOBBIED = 4
+    SELECTED_FOR_COMMITTEE = 5
+    FAILED_BY_COMMITTEE = 6
+    PASSED_BY_COMMITTEE = 7
+    SELECTED_FOR_GA = 8
+    FAILED_BY_GA = 9
+    PASSED_BY_GA = 10
+
+    STATUS_CHOICES = (
+        (NOT_SUBMITED, "Not Submitted"),
+        (SUMBITTED, "Submitted"),
+        (REJECTED_FOR_COMMITTEE, "Rejected for Committee"),
+        (ACCEPTED_FOR_COMMITTED, "Accepted for Committee"),
+        (LOBBIED, "Lobbied"),
+        (SELECTED_FOR_COMMITTEE, "Selected for Committee"),
+        (FAILED_BY_COMMITTEE, "Failed by Committee"),
+        (PASSED_BY_COMMITTEE, "Passed by Committee"),
+        (SELECTED_FOR_GA, "Selected for GA"),
+        (FAILED_BY_GA, "Failed by GA"),
+        (PASSED_BY_GA, "Passed by GA"),
+    )
+
+    status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=NOT_SUBMITED)
+
     def __str__(self):
         return "{} ({})".format(self.question_of, self.author.delegation.country)
+
+

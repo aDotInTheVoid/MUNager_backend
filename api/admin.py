@@ -16,10 +16,18 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
 
-from .models import CardPage, Card
+from .models import CardPage, Card, Delegate, Delegation, School, Committee, Resolution
+
+# Look customistation
+admin.site.site_header = "UCSMUNager "
+
+
 # Register your models here.
 
+# CMS
 
 class CardInLine(admin.StackedInline):
     model = Card
@@ -30,3 +38,59 @@ class CardPageAdmin(admin.ModelAdmin):
 
 
 admin.site.register(CardPage, CardPageAdmin)
+
+
+# Users
+
+class DelegateInline(admin.StackedInline):
+    model = Delegate
+    can_delete = False
+
+
+class UserAdmin(BaseUserAdmin):
+    inlines = (DelegateInline,)
+    list_display = ()
+
+
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
+
+
+@admin.register(Committee)
+class CommitteeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'room', 'block')
+
+
+@admin.register(Delegation)
+class DelegationAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'school')
+    list_filter = ('school',)
+
+
+@admin.register(Resolution)
+class ResolutionAdmin(admin.ModelAdmin):
+
+    # Todo: less hacky
+    def get_country(self):
+        return self.author.delegation.country
+
+    get_country.short_description = 'Country'
+
+    # Todo: less hacky
+    def get_committee(self):
+        return self.author.committee
+
+    get_committee.short_description = 'Committee'
+
+    # Todo: less hacky
+    def get_author(self):
+        name = self.author.user.first_name + self.author.user.last_name
+        return name if name else self.author.user.username
+
+    get_author.short_description = 'Author'
+
+    list_display = ('question_of', 'status', get_country, get_committee, get_author)
+    list_filter = ('status', 'author__delegation__country', 'author__committee')
+
+
+admin.site.register(School)
