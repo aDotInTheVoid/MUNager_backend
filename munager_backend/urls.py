@@ -26,7 +26,6 @@ sys.path.append("..")  # TODO: be less janky
 
 from schema import schema  # noqa: E402
 
-print(schema)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,5 +33,8 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
-    urlpatterns.append(path('gui/',
-                            GraphQLView.as_view(graphiql=True, schema=schema)))
+    urlpatterns.append(path(
+                            'gui/',
+                            GraphQLView.as_view(graphiql=True, schema=schema)
+                            )
+                       )
