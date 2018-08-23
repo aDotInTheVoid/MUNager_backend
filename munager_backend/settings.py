@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+try:
+    from .local_settings import *
+except ModuleNotFoundError:
+    pass
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -39,10 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     # 'ordered_model',
-    'graphene_django'
+    'graphene_django',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -76,11 +82,9 @@ WSGI_APPLICATION = 'munager_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
+# local_setings.py should contain postgres setup
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': POSTGRES
 }
 
 
@@ -125,3 +129,5 @@ STATIC_URL = '/static/'
 GRAPHENE = {
     'SCHEMA': 'munager_backend.schema.schema'
 }
+
+CORS_ORIGIN_ALLOW_ALL = True
