@@ -1,3 +1,7 @@
+This is the graphQL version of the backend and is no longer being developed
+I have decided to rewrite it with a REST API for various reasons concerning frontend.
+
+
 # MUNager_backend
 The backend to MUNager.
 
